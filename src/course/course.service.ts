@@ -1,48 +1,49 @@
-import { Inject, Injectable } from '@nestjs/common';
-import { InjectModel, MongooseModule } from '@nestjs/mongoose';
+import { Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import mongoose, { Model } from 'mongoose';
 import { Course } from './schema/course.schema';
-import mongoose from 'mongoose';
 
 @Injectable()
 export class CourseService {
+  constructor(
+    @InjectModel(Course.name) private courseModel: Model<Course>,
+  ) {}
 
-    constructor( 
-        @InjectModel(Course.name)
-        private CourseModel: mongoose.Model<Course>
-    ) {}
-    
-    async getAllCourses(): Promise<Course[]> {
-        const res = await this.CourseModel.find();
-        return res;
-    }
+  async getAllCourses(): Promise<Course[]> {
+    const res = await this.courseModel.find();
+    return res;
+  }
 
-    async addCourse(course: Course): Promise<Course> {
-        const res = await this.CourseModel.create(course);
-        return res;
-    }
+  async addCourse(course: Course): Promise<Course> {
+    const res = await this.courseModel.create(course);
+    return res;
+  }
 
-    async getCourseById(id: string): Promise<Course> {
-        const res = await this.CourseModel.findById(id);
-        return res;
-    }
+  async getCourseById(id: string): Promise<Course> {
+    const res = await this.courseModel.findOne({id : id});
+    return res;
+  }
 
-    async updateCourse(id: string, course: Course): Promise<Course> {
-        const res = await this.CourseModel.findByIdAndUpdate(id, course, {new: true});
-        return res;
-    }
+  async updateCourse(id: string, course: Course): Promise<Course> {
+    const res = await this.courseModel.findOneAndUpdate({ id: id }, course, { new: true });
+    return res;
+  }
 
-    async deleteCourse(id: string): Promise<Course> {     
-        const res = await this.CourseModel.findByIdAndDelete(id);
-        return res;
+  async deleteCourse(id: string): Promise<Course> {
+    const res = await this.courseModel.findOneAndDelete({id: id});
+    if (!res) {
+      throw new Error(`Course with id ${id} not found`);
     }
+    return res;
+  }
 
-    async deleteAllCourses(): Promise<mongoose.DeleteResult> {
-        const res = await this.CourseModel.deleteMany();
-        return res;
-    }
+  async deleteAllCourses(): Promise<mongoose.DeleteResult> {
+    const res = await this.courseModel.deleteMany();
+    return res;
+  }
 
-    async findCourseByName(name: string): Promise<Course> {    
-        const res = await this.CourseModel.findOne({name});
-        return res;
-    }
+  async findCourseByName(name: string): Promise<Course[]> {
+    const res = await this.courseModel.find({ name });
+    return res;
+  }
 }

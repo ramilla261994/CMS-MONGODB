@@ -10,7 +10,7 @@ export enum CourseStatusEnum {
 
 @Schema({
     timestamps: true,
-    collection: 'Courses'
+    collection: 'courses'
 })
 
 export class Course{
@@ -44,5 +44,4 @@ export class Course{
     @Prop()
     status: CourseStatusEnum;
 }
-
 export const CourseSchema = SchemaFactory.createForClass(Course);

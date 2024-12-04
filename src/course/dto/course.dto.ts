@@ -1,4 +1,5 @@
 import { IsString, Max, Min } from "class-validator";
+import { CourseStatusEnum } from "../schema/course.schema";
 
 export class CourseDto {
     @IsString()
@@ -14,5 +15,5 @@ export class CourseDto {
     @IsString()
     duration: number;
     @IsString()
-    status: string;
+    status: CourseStatusEnum;
 };

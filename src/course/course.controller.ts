@@ -1,10 +1,11 @@
 import { Body, Controller, Delete, Param, Patch, Post, Put } from '@nestjs/common';
 import { Get } from '@nestjs/common';
-import { Course } from './schema/course.schema';
+import { Course, CourseStatusEnum } from './schema/course.schema';
 import { CourseService } from './course.service';
 import { get } from 'http';
 import { CourseDto } from './dto/course.dto';
 import { randomUUID } from 'crypto';
+import { v4 as uuidv4 } from 'uuid';
 
 @Controller('course')
 export class CourseController {
@@ -12,41 +13,54 @@ export class CourseController {
 
     @Get()
     getAllCourses() {
-        this._service.getAllCourses();
+        const result = this._service.getAllCourses();
+        return result;
     }
 
     @Post()
-    addCourse(@Body() newcourse: CourseDto) {
-        const course = new Course();
-        course.id = uuidv4();
-        course.name = newcourse.name;
-        course.description = newcourse.description;
-        course.price = newcourse.price;
-        course.duration = newcourse.duration;
-        this._service.addCourse(course);
+    async addCourse(@Body() newcourse: CourseDto) {
+        const course:Course={
+        id : uuidv4(),
+        name : newcourse.name,
+        description : newcourse.description,
+        price : newcourse.price,
+        duration : newcourse.duration,
+        status : CourseStatusEnum.ACTIVE
+        }
+        const result = await this._service.addCourse(course);
+        return result;
     }
 
     @Get(':id')
-    getCourseById(id: string) {
-        this._service.getCourseById(id);
+    getCourseById(@Param('id') id: string) {
+       const result =  this._service.getCourseById(id);
+       return result;
     }
 
     @Get('name/:name')
     findCourseByName(@Param('name') name: string) {
-        this._service.findCourseByName(name);
+        const result = this._service.findCourseByName(name);
+        return result;
     }
     
     @Patch(':id')
-    updateCourse(id: string, @Body() course: Course) {
-        this._service.updateCourse(id, course);
+    updateCourse(@Param('id') id: string, @Body() course: Course) {
+        const result = this._service.updateCourse(id, course);
+        return result;
     }
 
     @Delete(':id')
-    deleteCourse(id: string) {
-        this._service.deleteCourse(id);
+    deleteCourse(@Param('id') id: string) {
+        const result =  this._service.deleteCourse(id);
+        return result;
+    }
+
+    @Delete()
+    deleteAllCourses() {
+        const result = this._service.deleteAllCourses();
+        return result;
     }
 }
-function uuidv4(): string {
-    throw new Error('Function not implemented.');
-}
+
+// function uuidv4 removed to avoid conflict with imported uuidv4
 
